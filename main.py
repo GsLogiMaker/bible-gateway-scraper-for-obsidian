@@ -1,6 +1,7 @@
 
 import argparse
 import os
+from functools import reduce
 from time import sleep
 from time import time
 
@@ -72,11 +73,15 @@ BIBLE_BOOKS = {
 	"Jude": 1,
 	"Revelation": 22,
 }
+TOTAL_CHAPTER_COUNT:int = reduce(lambda a, b: a+b, list(BIBLE_BOOKS.values()))
 
 BOOK_NAME_FORMAT = "{version}-{order}-{book}"
 CHAPTER_NAME_FORMAT = "{version}-{book}-{chapter}"
 DIVIDER_DEFAULT = "_"
-VERSION_DEFAULT = "amp"
+VERSION_DEFAULT = "kjv"
+
+LINE_UP = '\033[1A'
+LINE_CLEAR = '\x1b[2K'
 
 def main():
 	parser = argparse.ArgumentParser(
@@ -132,11 +137,14 @@ def main():
 	parser.add_argument(
 		"-v",
 		"--version",
-		default = VERSION_DEFAULT,
-		help = f"Specify the bible version to download. Default: '{VERSION_DEFAULT}'",
+		help = f"REQUIRED - Specify the bible version to download. Example: '{VERSION_DEFAULT}'",
 	)
 	
 	args = parser.parse_args()
+
+	if not args.version:
+		parser.print_help()
+		return
 
 	Downloader(args).generate_bible()
 
@@ -156,6 +164,7 @@ class Downloader():
 	headers:str = ""
 
 	_since_last_request = 0
+	_downloaded_chapter_count = 0
 
 	def __init__(self, args) -> None:
 		self.book_name_format = args.bookname
@@ -247,6 +256,9 @@ class Downloader():
 		
 		for book in BIBLE_BOOKS:
 			self.generate_book(book)
+		
+		print("FINISHED!")
+
 
 
 	def generate_book(self, book:str):
@@ -274,6 +286,14 @@ class Downloader():
 		os.system(command)
 		self._since_last_request = time()
 		self.parse_chapter_file(chapter_path, book, chapter)
+
+		self._downloaded_chapter_count += 1
+		
+		if book == "Genesis" and chapter == 1:
+			pass
+		else:
+			print(f"{LINE_UP}{LINE_CLEAR}", end="\r")
+		print(f"Downloaded {book} {chapter} ({self.version}) - {self._downloaded_chapter_count}/{TOTAL_CHAPTER_COUNT} chapters downloaded.")
 
 
 	def parse_chapter_file(self, path:str, book:str, chapter:int):
