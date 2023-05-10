@@ -1,5 +1,7 @@
 # bible-gateway-scraper-for-obsidian
 
+Uses https://github.com/jgclark/BibleGateway-to-Markdown to download bibles from Bible Gatway and adds obsidian links.
+
 ## Installation
 After cloning  the repository, install Ruby:
 ```
