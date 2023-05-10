@@ -73,8 +73,8 @@ BIBLE_BOOKS = {
 	"Revelation": 22,
 }
 
-BOOK_NAME_FORMAT = "{order}-{book}-{version}"
-CHAPTER_NAME_FORMAT = "{book}-{chapter}-{version}"
+BOOK_NAME_FORMAT = "{version}-{order}-{book}"
+CHAPTER_NAME_FORMAT = "{version}-{book}-{chapter}"
 DIVIDER_DEFAULT = "_"
 VERSION_DEFAULT = "amp"
 
